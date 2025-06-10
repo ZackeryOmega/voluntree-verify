@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Email Verification</title>
+  <script>
+    async function verifyEmail() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      const type = params.get('type');
+      
+      if (!token || type !== 'signup') {
+        document.getElementById('message').innerText = 'Invalid link';
+        return;
+      }
+      
+      try {
+        // Replace PROJECT-ID with your Supabase ID
+        const response = await fetch(
+          `https://yootdndwvhufhwiebrqu.supabase.co/auth/v1/verify?token=${token}&type=${type}`,
+          { method: 'GET' }
+        );
+        
+        const data = await response.json();
+        if (data.access_token) {
+          document.getElementById('message').innerText = 'Email verified!';
+        } else {
+          throw new Error(data.error_description || 'Verification failed');
+        }
+      } catch (error) {
+        document.getElementById('message').innerText = error.message;
+      }
+    }
+    window.onload = verifyEmail;
+  </script>
+</head>
+<body>
+  <div id="message">Verifying...</div>
+</body>
+</html>
